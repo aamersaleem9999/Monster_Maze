@@ -1,12 +1,12 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class enemy : MonoBehaviour
 {
-    private EnemyContainer myContainer;
+    private EnemyContainer currEnemy;
     private NavMeshAgent agent;
     private Animator anim;
     public GameObject healthBar;
@@ -15,47 +15,45 @@ public class enemy : MonoBehaviour
     private AllyContainer currAlly = null;
 	public string Opponent;
 
-    void Start()
+	void Start()
     {
         agent = this.GetComponent<NavMeshAgent>();
         anim = this.GetComponent<Animator>();
+		//this.anim.enabled = false;
         player = GameObject.FindGameObjectWithTag("player").gameObject;
         this.hbMaxScale = this.healthBar.transform.localScale.y;
     }
 
     public void setContainer(EnemyContainer ec)
     {
-        this.myContainer = ec;
+        this.currEnemy = ec;
     }
 
     public void takeDamage(int amount)
     {
-        this.myContainer.takeDamage(amount);
+        this.currEnemy.takeDamage(amount);
     }
 
     private void updateHealth()
     {
-        float percent = this.myContainer.getPercentHealthLeft();
+        float percent = this.currEnemy.getPercentHealthLeft();
         Vector3 hbScale = this.healthBar.transform.localScale;
+		//this.anim.enabled = false;
         this.healthBar.transform.localScale = new Vector3(hbScale.x, this.hbMaxScale * percent, hbScale.z);
-    }
-
+		//this.anim.enabled = true;
+	}
     
     private void despawn()
     {
         sceneManager.Destroy(this.gameObject);
     }
-
-
-
+		
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.tag != Opponent)
 			return;
-
-
 		Debug.Log ("enemy Hit!");
-		myContainer.takeDamage (5);
+		currEnemy.takeDamage (5);
 
 	}
 																					//Attack Opponent Function
@@ -81,7 +79,7 @@ public class enemy : MonoBehaviour
 
     void Update ()
 	{
-		if(this.myContainer.isDead())
+		if(this.currEnemy.isDead())
         {
             this.currAlly = null;												//Assigns enemy attacking character to null if the ally character is dead.
 
@@ -90,13 +88,16 @@ public class enemy : MonoBehaviour
             sceneManager.Kill(this.gameObject, this.anim);
             this.healthBar.GetComponent<MeshRenderer>().enabled = false;
           																		 //Remove ally character from the scene
-            Invoke("despawn", 1f);
+            Invoke("despawn", 2.5f);
         }
 
         else 																	// If the ally character is dead find another ally character for enemy to attack.
         {
+			// consitional check on trigger then update health
+
             this.updateHealth();
 
+			// 
             AllyContainer closest = sceneManager.findClosestAlly(this.gameObject);
 								
             if (closest != null) {
@@ -105,7 +106,7 @@ public class enemy : MonoBehaviour
                 if (Vector3.Distance(this.transform.position, closest.getGO().transform.position) > 6.2)
                 {													
 																			// Making enemy character walk towards ally character to attack
-				//	transform.GetComponent<NavMeshAgent> ().Resume();		// Toggles NavMesh ON/Off																	
+					transform.GetComponent<NavMeshAgent> ().Resume();		// Toggles NavMesh ON/Off																	
                     agent.SetDestination(closest.getGO().transform.position);
                     sceneManager.setMovementAnimation(this.anim, this.gameObject, closest);
 
@@ -114,13 +115,12 @@ public class enemy : MonoBehaviour
                 else if(!this.currAlly.isDead())
                     {
                     sceneManager.setMovementAnimation(this.anim, this.gameObject, closest);
-					//transform.GetComponent<NavMeshAgent> ().Stop();			// Toggles NavMesh ON/Off	
+					transform.GetComponent<NavMeshAgent> ().Stop();			// Toggles NavMesh ON/Off	
 					this.attackOpponent();
                 }
             }
 			else 																//If all the ally characters are dead; go and kill the player.	
             {
-				
               this.goKillPlayer();
             }
 
@@ -129,7 +129,7 @@ public class enemy : MonoBehaviour
 	private void goKillPlayer()
     {
 
-        if (Vector3.Distance(this.transform.position, player.transform.position) > 6.2)
+        if (Vector3.Distance(this.transform.position, player.transform.position) > 2.2)
         {
             //Debug.Log("  In gokillplayer method: value of player transform position "+(this.transform.position- player.transform.position));
             agent.SetDestination(player.transform.position);
@@ -163,7 +163,6 @@ public class enemy : MonoBehaviour
             																	//Player is dead
             playerStats.despawn();
         }
-        
         
     }
 

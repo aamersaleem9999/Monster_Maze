@@ -12,6 +12,7 @@ public class AllyContainer
     private GameObject go;
     private NavMeshAgent agent;
 
+
     public AllyContainer(GameObject go, int hp, int mp)
     {
         this.go = go;
@@ -25,15 +26,13 @@ public class AllyContainer
     public bool isDead()
     {
         return this.currHP <= 0;
-    }
 
-																//Taking damange from enemy
-    public  void takeDamage(int hp)
+    }
+							//Taking damange from enemy
+	public void takeDamage(int hp)
     {
         //Debug.Log(" taking damage in ally controller with current HP as ==>: " +this.currHP );
-
 		currHP -= hp;
-
 		Debug.Log (" Curr hp of Ally "+currHP);
     }
 

@@ -13,7 +13,6 @@ public class sceneManager : MonoBehaviour
 	public static int deathHash = Animator.StringToHash("isDead");
 	public static GameObject player = null;
 
-
 	///////////////////////////////////////////////////////////////           ANIMATION SECTION         ///////////////////////////////////////////////////////
 	public static void Kill(GameObject go, Animator anim)
 	{
@@ -40,6 +39,22 @@ public class sceneManager : MonoBehaviour
 			anim.SetTrigger(attackHash);//Attack animation to attack ally character
 		}
 	}
+
+	public static void setMovementAnimationally(Animator anim, GameObject src, EnemyContainer destinationTarget)
+
+	{
+		if(Vector3.Distance(src.transform.position, destinationTarget.getGO().transform.position) > 4.2)
+		{
+			anim.SetTrigger(walkHash);//Walk animation to attack ally character
+
+		}
+		else
+		{
+			anim.SetTrigger(attackHash);//Attack animation to attack ally character
+		}
+	}
+		
+
 	public static void setMovementToPlayer(Animator anim, GameObject src, GameObject playerObject)
 
 	{
@@ -95,13 +110,10 @@ public class sceneManager : MonoBehaviour
 
 	//Enemy targets player
 	public static void gotoPlayer(NavMeshAgent agent)
-
 	{
 		player= GameObject.FindGameObjectWithTag("player").gameObject;
 		agent.SetDestination(player.transform.position);
 	}
-
-
 
 																		//Enemy searches for nearest target; Either player ally or player himself
 	public static EnemyContainer findClosestEnemy(GameObject go)
