@@ -30,7 +30,6 @@ public class EnemyContainer
     public void takeDamage(int hp)
     {
         this.currHP -= hp;
-		Debug.Log (" Curr hp of Enemy "+currHP);
     }
 
     public float getPercentHealthLeft()
@@ -62,4 +61,5 @@ public class EnemyContainer
     {
         return this.maxMP;
     }
+    
 }

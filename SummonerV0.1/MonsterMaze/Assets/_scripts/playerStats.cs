@@ -2,41 +2,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class playerStats : MonoBehaviour
+[Serializable]
+public class playerStats
 {
-	public static int currHP = 10;
-	public static int maxHP = 10;
-	public int startHP = 10;		
-	public int startMaxHP = 10;
-	public static GameObject player;
+    public static GameObject player;
+    [SerializeField]
+    private playerHealthBar bar;
+    [SerializeField]
+    private float maxVal;
+    [SerializeField]
+    public float currentVal;
 
-	//Initializing player HP
-	void Start ()
-	{
-		playerStats.currHP = 9999;
-		playerStats.maxHP = 9999;
-		player = GameObject.FindGameObjectWithTag("player").gameObject;
-	}
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("player").gameObject;
+    }
 
-	public int getCurrHP()
-	{ 
-		return currHP;		//Returns current HP of the player
-	}
+    public void Initialize()
+    {
+        //Initializing HP Values
+        this.MaxVal = maxVal;
+        this.CurrentVal = currentVal;
 
-	public static void takeDamage(int amount)
-	{
-		currHP = currHP-amount;  //Damange amount is taken from enemy.cs
-	}
+    }
 
-	public static bool isDead()
-	{
-		return currHP <= 0;  //Returns True if player is dead/ HP=0
-	}
+    public float CurrentVal
+    {
+        get
+        {
+            return currentVal;
+        }
+        set
+        {
+            this.currentVal = Mathf.Clamp(value, 0, MaxVal);//Limits the HP value to 0
+            bar.Value = currentVal;
+        }
+    }
 
-	public static void despawn()
-	{
-		//Debug.Log ("In player stats despawn method");
-	}
-		
+    public float MaxVal
+    {
+        get
+        {
+            return maxVal;
+        }
+        set
+        {
+            this.maxVal = value;
+            bar.MaxValue = maxVal;
+        }
+    }
 }
